@@ -16,7 +16,7 @@ exports.MIN_INTEGER = -(1 << 27);
 exports.typeOf = typeOf
 exports.flatten = flatten
 
-exports.numbers = {}  // To be filled in later.
+exports.numbers = {119: 'SMALL_ATOM_UTF8'}  // To be filled in later.
 exports.tags = { 'SMALL_INTEGER' : 'a' // 97   61
                , 'INTEGER'       : 'b' // 98   62
                , 'FLOAT'         : 'c' // 99   63

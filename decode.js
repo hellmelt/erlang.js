@@ -103,6 +103,28 @@ Decoder.prototype.ATOM = function() {
   return term
 }
 
+Decoder.prototype.SMALL_ATOM =
+Decoder.prototype.SMALL_ATOM_UTF8 = function() {
+  debug('SMALL_ATOM %j', this.bin)
+  var start = 1 + 1 // The string tag and the length part
+  var length = this.bin.readUInt8(1)
+  var end = start + length
+
+  var term = this.bin.slice(start, end).toString('utf8')
+  if (term == 'false')
+    term = false
+  else if (term == 'true')
+    term = true
+  else if (term == 'nil')
+    term = null
+  else
+    term = {a:term}
+
+  this.bin = this.bin.slice(end)
+
+  return term
+}
+
 Decoder.prototype.LIST = function() {
   var length = this.bin.readUInt32BE(1)
   debug('LIST[%d] %j', length, this.bin)
