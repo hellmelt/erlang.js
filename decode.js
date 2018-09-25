@@ -82,7 +82,8 @@ Decoder.prototype.STRING = function() {
   return term
 }
 
-Decoder.prototype.ATOM = function() {
+Decoder.prototype.ATOM = 
+Decoder.prototype.ATOM_UTF8 = function() {
   debug('ATOM %j', this.bin)
   var start = 1 + 2 // The string tag and the length part
   var length = this.bin.readUInt16BE(1)

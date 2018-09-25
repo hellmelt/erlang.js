@@ -16,29 +16,31 @@ exports.MIN_INTEGER = -(1 << 27);
 exports.typeOf = typeOf
 exports.flatten = flatten
 
-exports.numbers = {119: 'SMALL_ATOM_UTF8'}  // To be filled in later.
-exports.tags = { 'SMALL_INTEGER' : 'a' // 97   61
-               , 'INTEGER'       : 'b' // 98   62
-               , 'FLOAT'         : 'c' // 99   63
-               , 'ATOM'          : 'd' // 100  64
-               , 'SMALL_ATOM'    : 's' // 115  73
-               , 'REFERENCE'     : 'e' // 101  65
-               , 'NEW_REFERENCE' : 'r' // 114  72
-               , 'PORT'          : 'f' // 102  66
-               , 'NEW_FLOAT'     : 'F' // 70   46
-               , 'PID'           : 'g' // 103  67
-               , 'SMALL_TUPLE'   : 'h' // 104  68
-               , 'LARGE_TUPLE'   : 'i' // 105  69
-               , 'NIL'           : 'j' // 106  6a
-               , 'STRING'        : 'k' // 107  6b
-               , 'LIST'          : 'l' // 108  6c
-               , 'BINARY'        : 'm' // 109  6d
-               , 'BIT_BINARY'    : 'M' // 77   4d
-               , 'SMALL_BIG'     : 'n' // 110  6e
-               , 'LARGE_BIG'     : 'o' // 111  6f
-               , 'NEW_FUN'       : 'p' // 112  70
-               , 'EXPORT'        : 'q' // 113  71
-               , 'FUN'           : 'u' // 117  75
+exports.numbers = {}  // To be filled in later.
+exports.tags = { 'SMALL_INTEGER'  : 'a' // 97   61
+               , 'INTEGER'        : 'b' // 98   62
+               , 'FLOAT'          : 'c' // 99   63
+               , 'ATOM'           : 'd' // 100  64
+               , 'ATOM_UTF8'      : 'v' // 118  76
+               , 'SMALL_ATOM'     : 's' // 115  73
+               , 'SMALL_ATOM_UTF8':'w' // 119  77
+               , 'REFERENCE'      : 'e' // 101  65
+               , 'NEW_REFERENCE'  : 'r' // 114  72
+               , 'PORT'           : 'f' // 102  66
+               , 'NEW_FLOAT'      : 'F' // 70   46
+               , 'PID'            : 'g' // 103  67
+               , 'SMALL_TUPLE'    : 'h' // 104  68
+               , 'LARGE_TUPLE'    : 'i' // 105  69
+               , 'NIL'            : 'j' // 106  6a
+               , 'STRING'         : 'k' // 107  6b
+               , 'LIST'           : 'l' // 108  6c
+               , 'BINARY'         : 'm' // 109  6d
+               , 'BIT_BINARY'     : 'M' // 77   4d
+               , 'SMALL_BIG'      : 'n' // 110  6e
+               , 'LARGE_BIG'      : 'o' // 111  6f
+               , 'NEW_FUN'        : 'p' // 112  70
+               , 'EXPORT'         : 'q' // 113  71
+               , 'FUN'            : 'u' // 117  75
                }
 
 // Actually these need to be integers to be useful. And set up a reverse-lookup object.
