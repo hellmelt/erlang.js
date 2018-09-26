@@ -93,6 +93,9 @@ Encoder.prototype.object = function(x) {
     // Encode the array as a tuple.
     return this.tuple(val)
 
+  if(tag === 'pid' || tag === 'p')
+    return this.pid(val)
+
   throw new Error("Unknown tag " + tag.toString() + " for value: " + util.inspect(val))
 }
 
@@ -146,6 +149,14 @@ Encoder.prototype.string = function(x) {
 
 Encoder.prototype.boolean = function(x) {
   return this.atom(x ? "true" : "false")
+}
+
+Encoder.prototype.pid = function(x) {
+  return [lib.tags.PID
+    , this.encode(x.node)
+    , lib.uint32(x.ID)
+    , lib.uint32(x.serial)
+    , x.creation]
 }
 
 function term_to_binary(term) {

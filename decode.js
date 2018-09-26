@@ -179,6 +179,40 @@ Decoder.prototype.BINARY = function() {
   return term
 }
 
+Decoder.prototype.PID = function() {
+  this.bin = this.bin.slice(1) // The tag byte
+  var node = this.decode()
+  var ID = this.bin.readUInt32BE(0)
+  var serial = this.bin.readUInt32BE(4)
+  var creation = this.bin.readUInt8(8)
+  this.bin = this.bin.slice(9) // Two four-byte nummbers, one one-byte number
+  return {p: {node, ID, serial, creation}}
+}
+
+Decoder.prototype.REFERENCE = function() {
+  this.bin = this.bin.slice(1) // The tag byte
+  var node = this.decode()
+  var ID = this.bin.readUInt32BE(0)
+  var creation = this.bin.readUInt8(4)
+  this.bin = this.bin.slice(5)
+  return {r: {node, creation, ID}}
+}
+
+Decoder.prototype.NEW_REFERENCE = function() {
+  var length = this.bin.readUInt16BE(1)
+  this.bin = this.bin.slice(3) // The tag byte, plus two size bytes
+  var node = this.decode()
+  var creation = this.bin.readUInt8(0)
+  this.bin = this.bin.slice(1)
+
+  var ID = new Array(length)
+  for (var i = 0; i < length; i++)
+    ID[i] = this.bin.readUInt32BE(i * 4)
+  this.bin = this.bin.slice(length * 4)
+
+  return {n: {node, creation, ID}}
+}
+
 if(require.main === module) {
   var ttb = require('./encode.js')
   var source = [1, 12, 13]
