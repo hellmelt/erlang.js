@@ -96,6 +96,9 @@ Encoder.prototype.object = function(x) {
   if(tag === 'pid' || tag === 'p')
     return this.pid(val)
 
+  if(tag === 'new_reference' || tag === 'n')
+    return this.new_reference(val)
+
   throw new Error("Unknown tag " + tag.toString() + " for value: " + util.inspect(val))
 }
 
@@ -157,6 +160,16 @@ Encoder.prototype.pid = function(x) {
     , lib.uint32(x.ID)
     , lib.uint32(x.serial)
     , x.creation]
+}
+
+Encoder.prototype.new_reference = function(x) {
+  var result = [lib.tags.NEW_REFERENCE
+    , lib.uint16(x.ID.length)
+    , this.encode(x.node)
+    , x.creation]
+  for(var i = 0; i < x.ID.length; i++)
+    result.push(lib.uint32(x.ID[i]))
+  return result
 }
 
 function term_to_binary(term) {
