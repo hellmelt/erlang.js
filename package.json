@@ -10,11 +10,11 @@
 , "scripts": { "test" : "tap test/"
              }
 
-, "dependencies": { "debug": "~1.0.4"
+, "dependencies": { "debug": "4.1.x"
                   }
 
-, "devDependencies": { "tap": "~12.0.1"
-                     , "async": "~0.2.10"
-                     , "traceback": "~0.3.1"
+, "devDependencies": { "tap": "12.0.x"
+                     , "async": "2.6.x"
+                     , "traceback": "0.3.x"
                      }
 }

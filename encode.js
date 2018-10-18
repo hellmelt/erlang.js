@@ -96,6 +96,9 @@ Encoder.prototype.object = function(x) {
   if(tag === 'pid' || tag === 'p')
     return this.pid(val)
 
+  if(tag === 'reference' || tag === 'r')
+    return this.reference(val)
+
   if(tag === 'new_reference' || tag === 'n')
     return this.new_reference(val)
 
@@ -159,6 +162,13 @@ Encoder.prototype.pid = function(x) {
     , this.encode(x.node)
     , lib.uint32(x.ID)
     , lib.uint32(x.serial)
+    , x.creation]
+}
+
+Encoder.prototype.reference = function(x) {
+  return [lib.tags.REFERENCE
+    , this.encode(x.node)
+    , lib.uint32(x.ID)
     , x.creation]
 }
 

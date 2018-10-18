@@ -24,23 +24,34 @@ var ECHO = {child:null, port:null, wait_timer:null}
 var THAI = '<<224,184,160,224,184,178,224,184,169,224,184,178,224,185,132,224,184,151,224,184,162>>'
 var MAP = '#{"name" => "Anders","surname" => "Hjelm"}'
 var TERMS =
-  [ '["two","array"]'      , ['two', 'array']                     // Innocent 2-array
-  , '"ABCDE"'              , "ABCDE"                              // string (char list, encoded as STRING)
-  , 'foo'                  , {a:'foo'}                            // atom
-  , "'GET'"                , {a:'GET'}
-  , '[{jason,awesome}]'    , [ {t:[{a:'jason'}, {a:'awesome'}]} ]
-  , '[1,false,nil,2]'      , [1, false, null, 2]                  // list with falsy values inside
-  , THAI                   , new Buffer('ภาษาไทย', 'utf8')        // binary
-  // TODO: Test the {b:"a binary"} syntax.
-  , '[[[[23,"skidoo"]]]]'  , [[[[23, 'skidoo']]]]                 // nested objects
-  , '123456'               , 123456                               // normal integer
-  , '{"tuple",here,too}'   , {t:['tuple', {a:'here'}, {a:'too'}]} //tuple
-  , '{booleans,true,false}', {t:[ {a:'booleans'}, true, false ]}  // Booleans
-  , MAP                    , new Map([['name', 'Anders'], ['surname', 'Hjelm']]) // Map
-  // Map keys which are objects, like {a: 'name} does not evaluate as equal in deepEqual. Might be
-  // a bug in Map that propagates to tsame. map.has({a: 'name'}) is false, even though the map has
-  // that key. And this will be common in maps from erlang, supposedly.
-  , '<8020.160.0>'            , {p: {node: {a: 'e@host'}, ID: 160, serial: 0, creation: 0}}
+  [ '["two","array"]'      , ['two', 'array']                       // Innocent 2-array
+    , '"ABCDE"'              , "ABCDE"                              // string (char list, encoded as STRING)
+    , 'foo'                  , {a:'foo'}                            // atom
+    , "'GET'"                , {a:'GET'}
+    , '[{jason,awesome}]'    , [ {t:[{a:'jason'}, {a:'awesome'}]} ]
+    , '[1,false,nil,2]'      , [1, false, null, 2]                  // list with falsy values inside
+    , THAI                   , new Buffer('ภาษาไทย', 'utf8')        // binary
+    // TODO: Test the {b:"a binary"} syntax.
+    , '[[[[23,"skidoo"]]]]'  , [[[[23, 'skidoo']]]]                 // nested objects
+    , '123456'               , 123456                               // normal integer
+    , '{"tuple",here,too}'   , {t:['tuple', {a:'here'}, {a:'too'}]} //tuple
+    , '{booleans,true,false}', {t:[ {a:'booleans'}, true, false ]}  // Booleans
+    , MAP                    , new Map([['name', 'Anders'], ['surname', 'Hjelm']]) // Map
+    /*
+     Map keys which are objects, like {a: 'name} does not evaluate as equal in deepEqual. (Might be
+     a bug in Map that propagates to tsame. map.has({a: 'name'}) is false, even though the map has
+     that key.) And this will be common in maps from erlang, supposedly. But this test case cannot use
+     objects as keys.
+    */
+
+    , '<8020.160.0>'         , {p: {node: {a: 'e@host'}, ID: 160, serial: 0, creation: 0}} // Pid
+
+    /*
+     , '#Ref{7613.42}'               , {r: {node: {a: 'e@host'}, creation: 0, ID: 42}} // Reference.
+     Erlang returns a new_reference, so this testcase fails.
+    */
+
+    , '#Ref<7613.44.43.42>'  , {n: {node: {a: 'e@host'}, creation: 0, ID: [42, 43, 44]}} // New_reference
   ].reduce(join_pairs, [])
 
 function join_pairs(state, item, i, terms) {
@@ -72,14 +83,14 @@ tap.test('Encoding', function(t) {
       if (er)
         return to_async(er)
 
-      t.equals(results.repr, pair.repr, 'Good representation: ' + pair.repr)
+      t.equal(results.repr, pair.repr, 'Good representation: ' + pair.repr)
 
       var encoded_term = API.term_to_binary(pair.term)
       t.same(results.encoded, encoded_term, 'Binary encoding matches Erlang: ' + pair.repr)
 
       var decoded_term = API.binary_to_term(results.encoded)
 
-      t.deepEqual(decoded_term, pair.term, 'Decode matches original: ' + decoded_term + ' ' + pair.term)
+      t.deepEqual(decoded_term, pair.term, 'Decode matches original: ' + pair.repr)
 
       return to_async(null)
     })
