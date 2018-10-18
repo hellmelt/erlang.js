@@ -22,6 +22,7 @@ var API = require('../api.js')
 
 var ECHO = {child:null, port:null, wait_timer:null}
 var THAI = '<<224,184,160,224,184,178,224,184,169,224,184,178,224,185,132,224,184,151,224,184,162>>'
+var MAP = '#{"name" => "Anders","surname" => "Hjelm"}'
 var TERMS =
   [ '["two","array"]'      , ['two', 'array']                     // Innocent 2-array
   , '"ABCDE"'              , "ABCDE"                              // string (char list, encoded as STRING)
@@ -35,6 +36,11 @@ var TERMS =
   , '123456'               , 123456                               // normal integer
   , '{"tuple",here,too}'   , {t:['tuple', {a:'here'}, {a:'too'}]} //tuple
   , '{booleans,true,false}', {t:[ {a:'booleans'}, true, false ]}  // Booleans
+  , MAP                    , new Map([['name', 'Anders'], ['surname', 'Hjelm']]) // Map
+  // Map keys which are objects, like {a: 'name} does not evaluate as equal in deepEqual. Might be
+  // a bug in Map that propagates to tsame. map.has({a: 'name'}) is false, even though the map has
+  // that key. And this will be common in maps from erlang, supposedly.
+  , '<8020.160.0>'            , {p: {node: {a: 'e@host'}, ID: 160, serial: 0, creation: 0}}
   ].reduce(join_pairs, [])
 
 function join_pairs(state, item, i, terms) {
@@ -62,18 +68,18 @@ tap.test('Encoding', function(t) {
   async.eachSeries(TERMS, test_pair, pairs_tested)
 
   function test_pair(pair, to_async) {
-    console.log('Send term: %s want %j', pair.repr, pair.term)
     send(pair.term, function(er, results) {
       if (er)
         return to_async(er)
 
-      t.equal(results.repr, pair.repr, 'Good representation: ' + pair.repr)
+      t.equals(results.repr, pair.repr, 'Good representation: ' + pair.repr)
 
       var encoded_term = API.term_to_binary(pair.term)
       t.same(results.encoded, encoded_term, 'Binary encoding matches Erlang: ' + pair.repr)
 
       var decoded_term = API.binary_to_term(results.encoded)
-      t.deepEqual(decoded_term, pair.term, 'Decode matches original: ' + pair.repr)
+
+      t.deepEqual(decoded_term, pair.term, 'Decode matches original: ' + decoded_term + ' ' + pair.term)
 
       return to_async(null)
     })

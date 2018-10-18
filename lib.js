@@ -23,7 +23,7 @@ exports.tags = { 'SMALL_INTEGER'  : 'a' // 97   61
                , 'ATOM'           : 'd' // 100  64
                , 'ATOM_UTF8'      : 'v' // 118  76
                , 'SMALL_ATOM'     : 's' // 115  73
-               , 'SMALL_ATOM_UTF8':'w' // 119  77
+               , 'SMALL_ATOM_UTF8': 'w' // 119  77
                , 'REFERENCE'      : 'e' // 101  65
                , 'NEW_REFERENCE'  : 'r' // 114  72
                , 'PORT'           : 'f' // 102  66
@@ -40,6 +40,7 @@ exports.tags = { 'SMALL_INTEGER'  : 'a' // 97   61
                , 'LARGE_BIG'      : 'o' // 111  6f
                , 'NEW_FUN'        : 'p' // 112  70
                , 'EXPORT'         : 'q' // 113  71
+               , 'MAP'            : 't' // 116  74
                , 'FUN'            : 'u' // 117  75
                }
 
@@ -55,12 +56,20 @@ function to_s(val) {
   return Object.prototype.toString.apply(val);
 }
 
+function isMap(value) {
+  // Note: Not completely waterproof test for Map
+  return value instanceof Map;
+}
+
 function typeOf(value) {
   if (Buffer.isBuffer(value))
     return 'buffer'
 
   if (Array.isArray(value))
     return 'array'
+
+  if (isMap(value))
+    return 'map'
 
   var s = typeof value
 

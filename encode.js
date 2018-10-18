@@ -172,6 +172,18 @@ Encoder.prototype.new_reference = function(x) {
   return result
 }
 
+Encoder.prototype.map = function(x) {
+  var result = [lib.tags.MAP
+    , lib.uint32(x.size)]
+  var iterator = x.entries()
+  for (i = 0; i < x.size; i++) {
+    [key, value] = iterator.next().value
+    result.push(this.encode(key))
+    result.push(this.encode(value))
+  }
+  return result
+}
+
 function term_to_binary(term) {
   var encoder = new Encoder
   var bytes = [lib.VERSION_MAGIC, encoder.encode(term)]

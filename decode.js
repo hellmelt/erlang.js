@@ -213,6 +213,18 @@ Decoder.prototype.NEW_REFERENCE = function() {
   return {n: {node, creation, ID}}
 }
 
+Decoder.prototype.MAP = function() {
+  var length = this.bin.readUInt32BE(1)
+  this.bin = this.bin.slice(5) // The tag byte, plus four size bytes
+  var map = new Map();
+  for (var i = 0; i < length; i++) {
+    var key = this.decode()
+    var value = this.decode()
+    map.set(key, value)
+  }
+  return map
+}
+
 if(require.main === module) {
   var ttb = require('./encode.js')
   var source = [1, 12, 13]
