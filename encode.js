@@ -50,6 +50,15 @@ Encoder.prototype.int = function(x) {
     throw new Error('Unknown integer: ' + x)
 }
 
+Encoder.prototype.float = function(x) {
+  var bin = Buffer.allocUnsafe(8)
+  bin.writeDoubleBE(x, 0)
+  var result = [lib.tags.NEW_FLOAT]
+  for (var i = 0; i < 8; i++)
+    result.push(bin[i])
+  return result
+}
+
 Encoder.prototype.array = function(x) {
   // Simple array encoding, without worrying about tagging.
   var result = []
@@ -85,7 +94,10 @@ Encoder.prototype.object = function(x) {
     // Encode the given string as a binary.
     return this.encode(new Buffer(val, 'utf8'))
 
-  if((tag === 'atom' || tag === 'a') && valType === 'string')
+    if((tag === 'binary' || tag === 'b') && valType === 'buffer')
+    return this.encode(val)
+
+    if((tag === 'atom' || tag === 'a') && valType === 'string')
     // Encode the string as an atom.
     return this.atom(val)
 

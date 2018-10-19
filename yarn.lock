@@ -408,7 +408,7 @@ debug-log@^1.0.1:
 
 debug@4.1.x:
   version "4.1.0"
-  resolved "http://cgdev.upp.telia.se:4873/debug/-/debug-4.1.0.tgz#373687bffa678b38b1cd91f861b63850035ddc87"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.1.0.tgz#373687bffa678b38b1cd91f861b63850035ddc87"
   dependencies:
     ms "^2.1.1"
 

@@ -30,10 +30,11 @@ var TERMS =
     , "'GET'"                , {a:'GET'}
     , '[{jason,awesome}]'    , [ {t:[{a:'jason'}, {a:'awesome'}]} ]
     , '[1,false,nil,2]'      , [1, false, null, 2]                  // list with falsy values inside
-    , THAI                   , new Buffer('ภาษาไทย', 'utf8')        // binary
-    // TODO: Test the {b:"a binary"} syntax.
+    , THAI                   , {b: new Buffer('ภาษาไทย', 'utf8')}   // binary
+    , '<<"Foo">>'            , {b: new Buffer('Foo', 'utf8')}
     , '[[[[23,"skidoo"]]]]'  , [[[[23, 'skidoo']]]]                 // nested objects
     , '123456'               , 123456                               // normal integer
+    , '3.14159'              , 3.14159                              // normal float
     , '{"tuple",here,too}'   , {t:['tuple', {a:'here'}, {a:'too'}]} //tuple
     , '{booleans,true,false}', {t:[ {a:'booleans'}, true, false ]}  // Booleans
     , MAP                    , new Map([['name', 'Anders'], ['surname', 'Hjelm']]) // Map

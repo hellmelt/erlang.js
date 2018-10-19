@@ -71,6 +71,13 @@ Decoder.prototype.INTEGER = function() {
   return term
 }
 
+Decoder.prototype.NEW_FLOAT = function() {
+  debug('NEW_FLOAT')
+  var term = this.bin.readDoubleBE(1)
+  this.bin = this.bin.slice(9) // One byte for the tag, eight for the 64-bit float.
+  return term
+}
+
 Decoder.prototype.STRING = function() {
   var start = 1 + 2 // The string tag and the length part
   var length = this.bin.readUInt16BE(1)
@@ -173,10 +180,10 @@ Decoder.prototype.BINARY = function() {
 
   debug('BINARY[%j]', length)
 
-  var term = this.bin.slice(start, end)
+  var binary = this.bin.slice(start, end)
   this.bin = this.bin.slice(end)
 
-  return term
+  return {b:binary}
 }
 
 Decoder.prototype.PID = function() {
