@@ -42,6 +42,7 @@ function Decoder (bin) {
 }
 
 Decoder.prototype.decode = function() {
+  if (this.bin.length === 0) return null
   var NUM = lib.numbers
   var TAG = lib.tags
 

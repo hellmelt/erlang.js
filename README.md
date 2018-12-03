@@ -105,6 +105,25 @@ Erlang lists are represented as JavaScript Arrays, and vice versa.
 ### Maps
 Erlang maps are represented as JavaScript Maps, and vice versa.
 
+## Type checks and converstions
+A set of small helpers for determining data type and setting and getting values is provided. The type
+check functions are pretty obvious:
+```javascript
+is_atom{a: 'hydrogen'}  // true
+is_tuple{a: 'oxygen'}   // false
+```
+The getters return undefined if the data type does not match:
+```javascript
+get_atom({a: 'hydrogen'})  // 'hydrogen
+get_atom({t: ['text1', {a: 'text2'}]}) // undefined
+get_tuple({t: ['text1', {a: 'text2'}]}) // ['text1', {a: 'text2'}]
+```
+The setters don't do much either:
+```javascript
+set_atom('nitrogen')  // {a: 'nitrogen'}
+set_tuple(['text1', set_atom('text2')])  // {t: ['text1', {a: 'text2'}]}
+```
+
 ## Optlists
 
 In JavaScript, if an API has tons of options, it tends to use an object.

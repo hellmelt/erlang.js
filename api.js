@@ -13,6 +13,7 @@
 var encode = require('./encode.js')
 var decode = require('./decode.js')
 var iolist = require('./iolist.js')
+var types = require('./types.js')
 
 module.exports =
   { term_to_binary   : encode
@@ -25,3 +26,7 @@ module.exports =
   , iolist_to_buffer : iolist.to_buffer
   , iolist_size      : iolist.size
   }
+
+  for (var type_func in types) {
+    module.exports[type_func] = types[type_func]
+  } 
