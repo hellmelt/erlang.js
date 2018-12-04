@@ -90,7 +90,6 @@ tap.test('Encoding', function(t) {
       t.same(results.encoded, encoded_term, 'Binary encoding matches Erlang: ' + pair.repr)
 
       var decoded_term = API.binary_to_term(results.encoded)
-
       t.deepEqual(decoded_term, pair.term, 'Decode matches original: ' + pair.repr)
 
       return to_async(null)

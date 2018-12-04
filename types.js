@@ -22,6 +22,11 @@ const is_list = (term) => {
   return is_array(term);
 };
 
+const is_map = (term) => {
+  // Not totally waterproof
+  return term instanceof Map;
+};
+
 const is_atom = (term) => {
   return (typeof term === 'object' && (term.hasOwnProperty('a') || term.hasOwnProperty('atom')));
 };
@@ -42,41 +47,61 @@ const is_reference = (term) => {
   return (typeof term === 'object' && (term.hasOwnProperty('n') || term.hasOwnProperty('new_reference')));
 };
 
-const is_map = (term) => {
-  // Not totally waterproof
-  return term instanceof Map;
-};
-
 const get_atom = (atom) => {
-  return is_atom(atom) ? (atom.a ? atom.a : atom.atom) : undefined;
-};
-
-const get_binary = (binary) => {
-  return is_binary(binary) ? (binary.b ? binary.b : binary.binary) : undefined;
-};
-
-const get_tuple = (tuple) => {
-  return is_tuple(tuple) ? (tuple.t ? tuple.t : tuple.tuple) : undefined;
-};
-
-const get_pid = (pid) => {
-  return is_pid(pid) ? (pid.p ? pid.p : pid.pid) : undefined;
-};
-
-const get_reference = (reference) => {
-  return is_reference(reference) ? (reference.r ? reference.r : reference.reference) : undefined;
-};
-
-const tuple_length = (tuple) => {
-  return is_tuple(tuple) ? get_tuple(tuple).length : undefined;
-};
-
-const set_tuple = (array) => {
-  return {t: array};
+  if (!is_atom(atom)) throw new Error('Not an atom');
+  return atom.a ? atom.a : atom.atom;
 };
 
 const set_atom = (atomText) => {
+  if (!typeof atomText === 'string') throw new Error('atomText is not a string');
   return {a: atomText};
+};
+
+const get_binary = (binary) => {
+  if (!is_binary(binary)) throw new Error('Not a binary');
+  return binary.b ? binary.b : binary.binary;
+};
+
+const set_binary = (bufferOrText) => {
+  if (!typeof bufferOrText === 'string' && !bufferOrText instanceof Buffer)
+    throw new Error('binary can only be set with a string or a' + ' buffer');
+  return {b: bufferOrText};
+};
+
+const get_tuple = (tuple) => {
+  if (!is_tuple(tuple)) throw new Error('Not a tuple');
+  return tuple.t ? tuple.t : tuple.tuple;
+};
+
+const tuple_length = (tuple) => {
+  if (!is_tuple(tuple)) throw new Error('Not a tuple');
+  return get_tuple(tuple).length;
+};
+
+const set_tuple = (array) => {
+  if (!Array.isArray(array)) throw new Error('Tuple can only be set with an array');
+  return {t: array};
+};
+
+const get_pid = (pid) => {
+  if (!is_pid(pid)) throw new Error('Not a pid');
+  return pid.p ? pid.p : pid.pid;
+};
+
+const set_pid = (node, ID, serial, creation) => {
+  if (!typeof ID === 'number' || !typeof serial === 'number' || !typeof creation === 'number')
+    throw new Error('ID, serial, and creation must be integers');
+  return {p: {node: set_atom(node), ID, serial, creation}};
+};
+
+const get_reference = (reference) => {
+  if (!is_new_reference(reference)) throw new Error('Not a reference');
+  return reference.r ? reference.r : reference.reference;
+};
+
+const set_reference = (node, creation, ID) => {
+  if (!Array.isArray(ID) || ID.length !== 3) throw new Error('ID must be an array of length 3');
+  return {n: {node: set_atom(node), creation, ID}}
 };
 
 module.exports = {
@@ -92,11 +117,14 @@ module.exports = {
   is_pid,
   is_reference,
   get_atom,
+  set_atom,
   get_binary,
+  set_binary,
   get_tuple,
-  get_pid,
-  get_reference,
   tuple_length,
   set_tuple,
-  set_atom
+  get_pid,
+  set_pid,
+  get_reference,
+  set_reference
 };

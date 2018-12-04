@@ -57,6 +57,12 @@ term_to_binary({a:'POST'}) // Encodes the atom 'POST'
 
 ```javascript
 term_to_binary({b:'POST'}) // Encodes the binary <<"POST">>
+
+binary_to_term(term_to_binary({b:'POST'})) 
+// Does NOT return {b:'POST'}, rather { b: <Buffer 50 4f 53 54> }, since there is not way to know that the
+// buffer shall be interpreted as text.
+
+term_to_binary({b: Buffer.from([0x05, 0x75, 0x66, 0x66, 0x65, 0x72])}) // Will be <<5,117,102,102,101,114>> in erlang
 ```
 
 ### Tuples
@@ -88,7 +94,8 @@ An erlang pid is represented as an object with properties
  * creation - an integer
 
 ```javascript
-{p: {node: {a: 'e@host'}, ID: 160, serial: 0, creation: 0}} // Will be represented as <8020.160.0> in erlang
+{p: {node: {a: 'e@host'}, ID: 160, serial: 0, creation: 0}} 
+// Will be represented as <8020.160.0> in erlang. Note that the first number in the triple can vary. 
 ```
 
 ### Strings
@@ -112,10 +119,10 @@ check functions are pretty obvious:
 is_atom{a: 'hydrogen'}  // true
 is_tuple{a: 'oxygen'}   // false
 ```
-The getters return undefined if the data type does not match:
+The getters throw if the data type does not match:
 ```javascript
 get_atom({a: 'hydrogen'})  // 'hydrogen
-get_atom({t: ['text1', {a: 'text2'}]}) // undefined
+get_atom({t: ['text1', {a: 'text2'}]}) // throw new Error('Not an atom');
 get_tuple({t: ['text1', {a: 'text2'}]}) // ['text1', {a: 'text2'}]
 ```
 The setters don't do much either:

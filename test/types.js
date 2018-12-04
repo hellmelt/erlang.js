@@ -1,5 +1,24 @@
 const tap = require('tap');
-const { is_atom, get_atom, is_tuple, get_tuple, tuple_length, is_pid, is_reference } = require('../api.js');
+const { is_boolean, is_number, is_string, is_atom, get_atom, is_tuple, get_tuple, tuple_length, is_pid, is_new_reference } = require('../types');
+
+tap.test('boolean type', (t) => {
+  t.ok(is_boolean(true));
+  t.notOk(is_boolean('true'));
+  t.end();
+});
+
+tap.test('number type', (t) => {
+  t.ok(is_number(3));
+  t.ok(is_number(3.14159));
+  t.notOk(is_number('3'));
+  t.end();
+});
+
+tap.test('string type', (t) => {
+  t.ok(is_string('3.14'));
+  t.notOk(is_string(3.14));
+  t.end();
+});
 
 tap.test('atom type', (t) => {
   const atom = {a: 'atomText'};
@@ -10,8 +29,8 @@ tap.test('atom type', (t) => {
   t.notOk(is_atom('atomText'), 'is_atom false for string');
 
   t.equal(get_atom(atom), 'atomText', 'Extracts correct atom contents');
-  t.notEqual(get_atom('atomText'), 'atomText', 'Does not extract atom from string');
-  t.notEqual(get_atom(notAtom), 't1', 'Does not extract atom from other type');
+  t.throws(() => { get_atom('atomText') }, 'Not an atom', 'Does not extract atom from string');
+  t.throws(() => { get_atom(notAtom) }, 'Not an atom', 'Does not extract atom from other type');
 
   t.end();
 });
@@ -21,7 +40,7 @@ tap.test('tuple type', (t) => {
   const notTuple = {a: 'atomText'};
 
   t.ok(is_tuple(tuple), 'is_tuple is true for a tuple');
-  t.notOk(is_tuple(notTuple), 'is_tuple is false for e.g. an atom');
+  t.notOk(is_tuple(notTuple), 'is_tuple is false for an atom');
 
   t.equal(4, tuple_length(tuple), 'tuple_length returns correct length');
 
@@ -46,7 +65,7 @@ tap.test('new reference type', (t) => {
         creation: 3,
         ID: [ 139494, 3817603080, 1276906264 ] } };
 
-  t.ok(is_reference(ref), 'is_reference returns true for a new reference object');
+  t.ok(is_new_reference(ref), 'is_reference returns true for a new reference object');
 
   t.end();
 });
