@@ -95,13 +95,56 @@ const set_pid = (node, ID, serial, creation) => {
 };
 
 const get_reference = (reference) => {
-  if (!is_new_reference(reference)) throw new Error('Not a reference');
-  return reference.r ? reference.r : reference.reference;
+  if (!is_reference(reference)) throw new Error('Not a reference');
+  return reference.n ? reference.n : reference.new_reference;
 };
 
 const set_reference = (node, creation, ID) => {
   if (!Array.isArray(ID) || ID.length !== 3) throw new Error('ID must be an array of length 3');
   return {n: {node: set_atom(node), creation, ID}}
+};
+
+const print_term = (term) => {
+   const print_array = (arr) => {
+    let result = '[\n';
+    for (let i = 0; i < arr.length; i++) {
+      result += print_term(arr[i]);
+    }
+    return result + ']\n';
+  }
+
+  if (is_array(term)) {
+    return `list: ${print_array(term)}`;
+  }
+
+  if (is_atom(term)) {
+    return `atom: ${get_atom(term)}\n`;
+  }
+
+  if (is_binary(term)) {
+    return `binary: ${get_binary(term)}\n`;
+  }
+
+  if (is_tuple(term)) {
+    const arr = get_tuple(term);
+    return `tuple: ${print_array(arr)}`;
+  }
+
+  if (is_pid(term)) {
+    const pid = get_pid(term);
+    return `pid: ${get_atom(pid.node)} ${pid.ID} ${pid.serial} ${pid.creation}\n`;
+  }
+
+  if (is_reference(term)) {
+    const ref = get_reference(term);
+    return `reference: ${get_atom(ref.node)} ${ref.ID} ${ref.creation}\n`;
+  }
+
+  if (term) {
+    return `simple data: ${term.toString()}\n`;
+  }
+
+  return `Unknown: ${typeof term}\n`;
 };
 
 module.exports = {
@@ -126,5 +169,6 @@ module.exports = {
   get_pid,
   set_pid,
   get_reference,
-  set_reference
+  set_reference,
+  print_term
 };

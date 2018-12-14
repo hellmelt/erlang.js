@@ -121,7 +121,7 @@ is_tuple{a: 'oxygen'}   // false
 ```
 The getters throw if the data type does not match:
 ```javascript
-get_atom({a: 'hydrogen'})  // 'hydrogen
+get_atom({a: 'hydrogen'})  // 'hydrogen'
 get_atom({t: ['text1', {a: 'text2'}]}) // throw new Error('Not an atom');
 get_tuple({t: ['text1', {a: 'text2'}]}) // ['text1', {a: 'text2'}]
 ```
