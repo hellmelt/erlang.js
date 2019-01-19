@@ -79,15 +79,21 @@ Decoder.prototype.NEW_FLOAT = function() {
   return term
 }
 
+// In erlang, there is no string datatype. A string is a list of integers, that might
+// be interpreted as characters when relevant. When the erlang run-time system decodes a list of small
+// integers (<256), the list is encoded as STRING_EXT for efficency reasons.
+// That is why this function decodes to an array of integers. The array can be converted to a string
+// later on, if that is what the application wants.
 Decoder.prototype.STRING = function() {
-  var start = 1 + 2 // The string tag and the length part
   var length = this.bin.readUInt16BE(1)
   debug('STRING[%j]', length)
-
-  var term = this.bin.slice(start, start + length).toString('utf8')
-  this.bin = this.bin.slice(start + length)
-
-  return term
+  this.bin = this.bin.slice(3) // The string tag and the length part
+  var list = new Array(length)
+  for (let i = 0; i < length; i++) {
+    list[i] = this.bin.readUInt8(i)
+  }
+  this.bin = this.bin.slice(length)
+  return list
 }
 
 Decoder.prototype.ATOM = 
@@ -137,6 +143,7 @@ Decoder.prototype.SMALL_ATOM_UTF8 = function() {
 Decoder.prototype.LIST = function() {
   var length = this.bin.readUInt32BE(1)
   debug('LIST[%d] %j', length, this.bin)
+  console.log('LIST[%d] %j', length, this.bin)
   var term = new Array(length)
 
   var body = new Decoder(this.bin.slice(5))

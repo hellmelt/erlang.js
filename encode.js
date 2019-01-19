@@ -158,6 +158,9 @@ Encoder.prototype.string = function(x) {
     // TODO: Some kind of warning that this should probably be a binary since it is not only low-ASCII.
   }
 
+  if (bytes.length > Math.pow(2, 16)) {
+    throw new Error('String is too long, ' + bytes.length + ', ' + Math.pow(2,16) + ' is max')
+  }
   result.push(lib.uint16(bytes.length))
   for(var a = 0; a < bytes.length; a++)
     result.push(bytes[a])

@@ -10,6 +10,19 @@ const is_string = (term) => {
   return (typeof term === 'string');
 };
 
+const might_be_string = (arrOfInts) => {
+  if (typeof arrOfInts === 'string') return false;
+  if (!Array.isArray(arrOfInts)) return false;
+  if (Math.min(...arrOfInts) < 0x20) return false;
+  return true;
+}
+
+const get_string = (arrOfInts) => {
+  if (typeof arrOfInts === 'string') return arrOfInts;
+  if (!might_be_string(arrOfInts)) throw new Error('The argument cannot be interpreted as a string');
+  return Buffer.from(arrOfInts).toString('utf8');
+}
+
 const is_undefined = (term) => {
   return (typeof term === 'undefined');
 };
@@ -151,9 +164,12 @@ module.exports = {
   is_boolean,
   is_number,
   is_string,
+  might_be_string,
+  get_string,
   is_undefined,
   is_array,
   is_list,
+  is_map,
   is_atom,
   is_binary,
   is_tuple,
