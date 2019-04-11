@@ -29,12 +29,12 @@ test('Small tuple codec', function(t) {
   var dec = api.binary_to_term(bin)
   t.equal(dec.t.length, 255, 'Decoded tuple has the correct element count')
   for (var i = 0; i < 255; i++)
-    t.equal(dec.t[i].toString(), `tuple element ${i}`, 'Tuple element is in the right position: ' + i)
+    t.equal(dec.t[i].b.toString(), `tuple element ${i}`, 'Tuple element is in the right position: ' + i)
 
   t.end()
 })
 
-test('Large tuple codec', (t) => {
+  test('Large tuple codec', (t) => {
   var smallest_large_tuple = mk_tuple(256)
   t.equal(smallest_large_tuple.t.length, 256, 'The smallest LARGE_TUPLE has 256 or more elements')
 
@@ -43,7 +43,7 @@ test('Large tuple codec', (t) => {
   t.equal(bin[1], lib.tags.LARGE_TUPLE, 'Tuple is encoded as a LARGE_TUPLE')
 
   var tuple_size = bin.slice(2, 6)
-  t.ok(tuple_size.equals(new Buffer([0x00, 0x00, 0x01, 0x00])), 'Tuple size is 256 encoded in unsigned 32-bit big-endian')
+  t.ok(tuple_size.equals(Buffer.from([0x00, 0x00, 0x01, 0x00])), 'Tuple size is 256 encoded in unsigned 32-bit big-endian')
 
   tuple_size = bin.readUInt32BE(2)
   t.equal(tuple_size, 256, 'Tuple size is 256 as decoded from the buffer')
@@ -51,7 +51,7 @@ test('Large tuple codec', (t) => {
   var dec = api.binary_to_term(bin)
   t.equal(dec.t.length, 256, 'Decoded tuple has the correct element count')
   for (var i = 0; i < 256; i++)
-    t.equal(dec.t[i].toString(), `tuple element ${i}`, 'Large tuple element is in the right position: ' + i)
+    t.equal(dec.t[i].b.toString(), `tuple element ${i}`, 'Large tuple element is in the right position: ' + i)
 
   t.end()
 })
@@ -69,6 +69,6 @@ test('Very large tuple', (t) => {
 function mk_tuple(size, fill) {
   var result = []
   for (var i = 0; i < size; i++)
-    result.push(fill || new Buffer('tuple element ' + i))
+    result.push(fill || Buffer.from('tuple element ' + i))
   return {t: result}
 }

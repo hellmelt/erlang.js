@@ -16,6 +16,7 @@ var tap = require('tap')
 var util = require('util')
 var async = require('async')
 var child_process = require('child_process')
+var { is_pid } = require('../types')
 
 var API = require('../api.js')
 
@@ -30,8 +31,8 @@ var TERMS =
     , "'GET'"                , {a:'GET'}
     , '[{jason,awesome}]'    , [ {t:[{a:'jason'}, {a:'awesome'}]} ]
     , '[1,false,nil,2]'      , [1, false, null, 2]                  // list with falsy values inside
-    , THAI                   , {b: new Buffer('ภาษาไทย', 'utf8')}   // binary
-    , '<<"Foo">>'            , {b: new Buffer('Foo', 'utf8')}
+    , THAI                   , {b: Buffer.from('ภาษาไทย', 'utf8')}   // binary
+    , '<<"Foo">>'            , {b: Buffer.from('Foo', 'utf8')}
     , '[[[[23,"skidoo"]]]]'  , [[[[23, 'skidoo']]]]                 // nested objects
     , '123456'               , 123456                               // normal integer
     , '3.14159'              , 3.14159                              // normal float
@@ -84,7 +85,16 @@ tap.test('Encoding', function(t) {
       if (er)
         return to_async(er)
 
-      t.equal(results.repr, pair.repr, 'Good representation: ' + pair.repr)
+      if (is_pid(pair.term)) {
+        var res = results.repr.split('.')
+        var pr = pair.repr.split('.')
+        t.equal(
+          res[0].split('')[0] + res[1] + res[2],
+          pr[0].split('')[0] + pr[1] + pr[2],
+          'Good representation: ' + pair.repr
+      )} else {
+        t.equal(results.repr, pair.repr, 'Good representation: ' + pair.repr)
+      }
 
       var encoded_term = API.term_to_binary(pair.term)
       t.same(results.encoded, encoded_term, 'Binary encoding matches Erlang: ' + pair.repr)
@@ -118,7 +128,7 @@ function send(term, callback) {
     function on_connect() {
       // Send the term.
       var bin = API.term_to_binary(term)
-      var length = new Buffer(4)
+      var length = Buffer.alloc(4)
       length.writeUInt32BE(bin.length, 0)
 
       client.write(length)

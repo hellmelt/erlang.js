@@ -1,5 +1,5 @@
 const tap = require('tap');
-const { is_boolean, is_number, is_string, is_atom, get_atom, is_tuple, get_tuple, tuple_length, is_pid, is_new_reference } = require('../types');
+const { is_boolean, is_number, is_string, is_atom, get_atom, is_tuple, get_tuple, tuple_length, is_pid, is_reference } = require('../types');
 
 tap.test('boolean type', (t) => {
   t.ok(is_boolean(true));
@@ -65,7 +65,7 @@ tap.test('new reference type', (t) => {
         creation: 3,
         ID: [ 139494, 3817603080, 1276906264 ] } };
 
-  t.ok(is_new_reference(ref), 'is_reference returns true for a new reference object');
+  t.ok(is_reference(ref), 'is_reference returns true for a new reference object');
 
   t.end();
 });
