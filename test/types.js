@@ -1,5 +1,17 @@
 const tap = require('tap');
-const { is_boolean, is_number, is_string, is_atom, get_atom, is_tuple, get_tuple, tuple_length, is_pid, is_reference } = require('../types');
+const {
+  is_boolean,
+  is_number,
+  is_string,
+  is_atom,
+  get_atom,
+  is_tuple,
+  get_tuple,
+  tuple_length,
+  is_pid,
+  is_reference,
+  array_to_string,
+  string_to_array } = require('../types');
 
 tap.test('boolean type', (t) => {
   t.ok(is_boolean(true));
@@ -67,5 +79,13 @@ tap.test('new reference type', (t) => {
 
   t.ok(is_reference(ref), 'is_reference returns true for a new reference object');
 
+  t.end();
+});
+
+tap.test('string to array', (t) => {
+  const str = 'abc';
+  const arr = string_to_array(str);
+  t.same(arr, [97, 98, 99], 'Converts to correct array');
+  t.equal(array_to_string(arr), str, 'Converts to correct string');
   t.end();
 });

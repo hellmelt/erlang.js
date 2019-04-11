@@ -10,19 +10,6 @@ const is_string = (term) => {
   return (typeof term === 'string');
 };
 
-const might_be_string = (arrOfInts) => {
-  if (typeof arrOfInts === 'string') return false;
-  if (!Array.isArray(arrOfInts)) return false;
-  if (Math.min(...arrOfInts) < 0x20) return false;
-  return true;
-}
-
-const get_string = (arrOfInts) => {
-  if (typeof arrOfInts === 'string') return arrOfInts;
-  if (!might_be_string(arrOfInts)) throw new Error('The argument cannot be interpreted as a string');
-  return Buffer.from(arrOfInts).toString('utf8');
-}
-
 const is_undefined = (term) => {
   return (typeof term === 'undefined');
 };
@@ -161,7 +148,10 @@ const print_term = (term) => {
 };
 
 const string_to_array = (str, encoding) => {
-  return Buffer.from(str, encoding);
+  const result = [];
+  const buf = Buffer.from(str, encoding);
+  for (let i = 0; i < buf.length; i++) result.push(buf.readUInt8(i));
+  return result;
 };
 
 const array_to_string = (arr, encoding) => {
@@ -172,8 +162,6 @@ module.exports = {
   is_boolean,
   is_number,
   is_string,
-  might_be_string,
-  get_string,
   is_undefined,
   is_array,
   is_list,
@@ -194,5 +182,7 @@ module.exports = {
   set_pid,
   get_reference,
   set_reference,
+  string_to_array,
+  array_to_string,
   print_term
 };

@@ -17,6 +17,7 @@ var util = require('util')
 var async = require('async')
 var child_process = require('child_process')
 var { is_pid } = require('../types')
+var lib = require('../lib')
 
 var API = require('../api.js')
 
@@ -27,6 +28,7 @@ var MAP = '#{"name" => "Anders","surname" => "Hjelm"}'
 var TERMS =
   [ '["two","array"]'      , ['two', 'array']                       // Innocent 2-array
     , '"ABCDE"'              , "ABCDE"                              // string (char list, encoded as STRING)
+    , '[1,2,3,4]'            , [1, 2, 3, 4]                         // Array of small INT
     , 'foo'                  , {a:'foo'}                            // atom
     , "'GET'"                , {a:'GET'}
     , '[{jason,awesome}]'    , [ {t:[{a:'jason'}, {a:'awesome'}]} ]
@@ -47,6 +49,10 @@ var TERMS =
     */
 
     , '<8020.160.0>'         , {p: {node: {a: 'e@host'}, ID: 160, serial: 0, creation: 0}} // Pid
+    /*
+     The first part of a pid depends on how the node represents references to other nodes.
+     That is unpredictable. That is why the test evaluation below has a special for for pids.
+     */
 
     /*
      , '#Ref{7613.42}'               , {r: {node: {a: 'e@host'}, creation: 0, ID: 42}} // Reference.
@@ -97,9 +103,18 @@ tap.test('Encoding', function(t) {
       }
 
       var encoded_term = API.term_to_binary(pair.term)
+      var decoded_term = API.binary_to_term(results.encoded)
+
+      if (results.encoded[1] === lib.tags.STRING && encoded_term[1] === lib.tags.LIST) {
+        // This is the case where erlang encodes a list of small ints as a string!
+        // It is impossible to distinguish if a string or list is correct. But
+        // in our test case, it should be a list.
+        encoded_term = API.term_to_binary(API.array_to_string(pair.term));
+        decoded_term = API.string_to_array(decoded_term);
+      }
+
       t.same(results.encoded, encoded_term, 'Binary encoding matches Erlang: ' + pair.repr)
 
-      var decoded_term = API.binary_to_term(results.encoded)
       t.deepEqual(decoded_term, pair.term, 'Decode matches original: ' + pair.repr)
 
       return to_async(null)
@@ -140,7 +155,6 @@ function send(term, callback) {
     }
 
     function on_end() {
-      console.log('Client done')
       client.end()
 
       response = Buffer.concat(response)
@@ -179,7 +193,6 @@ function with_server(callback) {
   })
 
   ECHO.child.on('close', function(code) {
-    console.log('Echo child closed')
     clearTimeout(ECHO.wait_timer)
   })
 
