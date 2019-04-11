@@ -38,7 +38,7 @@ function binary_to_term(term) {
 }
 
 function Decoder (bin) {
-  this.bin = bin || new Buffer([])
+  this.bin = bin || Buffer.from([])
 }
 
 Decoder.prototype.decode = function() {
@@ -79,6 +79,11 @@ Decoder.prototype.NEW_FLOAT = function() {
   return term
 }
 
+// In erlang, there is no string datatype. A string is a list of integers, that might
+// be interpreted as characters when relevant. When the erlang run-time system decodes a list of small
+// integers (<256), the list is encoded as STRING_EXT for efficency reasons.
+// That is why this function decodes to an array of integers. The array can be converted to a string
+// later on, if that is what the application wants.
 Decoder.prototype.STRING = function() {
   var start = 1 + 2 // The string tag and the length part
   var length = this.bin.readUInt16BE(1)
@@ -90,7 +95,7 @@ Decoder.prototype.STRING = function() {
   return term
 }
 
-Decoder.prototype.ATOM = 
+Decoder.prototype.ATOM =
 Decoder.prototype.ATOM_UTF8 = function() {
   debug('ATOM %j', this.bin)
   var start = 1 + 2 // The string tag and the length part

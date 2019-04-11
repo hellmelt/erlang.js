@@ -160,6 +160,14 @@ const print_term = (term) => {
   return `Unknown: ${typeof term}\n`;
 };
 
+const string_to_array = (str, encoding) => {
+  return Buffer.from(str, encoding);
+};
+
+const array_to_string = (arr, encoding) => {
+  return Buffer.from(arr).toString(encoding);
+};
+
 module.exports = {
   is_boolean,
   is_number,

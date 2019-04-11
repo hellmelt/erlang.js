@@ -92,7 +92,7 @@ Encoder.prototype.object = function(x) {
 
   if((tag === 'binary' || tag === 'b') && valType === 'string')
     // Encode the given string as a binary.
-    return this.encode(new Buffer(val, 'utf8'))
+    return this.encode(nBuffer.from(val, 'utf8'))
 
     if((tag === 'binary' || tag === 'b') && valType === 'buffer')
     return this.encode(val)
@@ -118,7 +118,7 @@ Encoder.prototype.object = function(x) {
 }
 
 Encoder.prototype.atom = function(x) {
-  var bytes = new Buffer(x, 'utf8')
+  var bytes = Buffer.from(x, 'utf8')
   var result = [ lib.tags.ATOM
                , lib.uint16(bytes.length) ]
 
@@ -153,7 +153,7 @@ Encoder.prototype.buffer = function(x) {
 Encoder.prototype.string = function(x) {
   var result = [lib.tags.STRING]
 
-  var bytes = new Buffer(x, 'utf8')
+  var bytes = Buffer.from(x, 'utf8')
   if(bytes.length != x.length) {
     // TODO: Some kind of warning that this should probably be a binary since it is not only low-ASCII.
   }
@@ -213,7 +213,7 @@ function term_to_binary(term) {
   var encoder = new Encoder
   var bytes = [lib.VERSION_MAGIC, encoder.encode(term)]
   //console.log('bytes: %j', bytes)
-  return new Buffer(lib.flatten(bytes))
+  return Buffer.from(lib.flatten(bytes))
 }
 
 // Provide convenience to convert to Erlang opt lists: [{verbose, true}, quiet, etc]
