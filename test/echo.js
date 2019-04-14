@@ -29,6 +29,7 @@ var TERMS =
   [ '["two","array"]'      , ['two', 'array']                       // Innocent 2-array
     , '"ABCDE"'              , "ABCDE"                              // string (char list, encoded as STRING)
     , '[1,2,3,4]'            , [1, 2, 3, 4]                         // Array of small INT
+    , '[]'                   , []                                   // Empty array
     , 'foo'                  , {a:'foo'}                            // atom
     , "'GET'"                , {a:'GET'}
     , '[{jason,awesome}]'    , [ {t:[{a:'jason'}, {a:'awesome'}]} ]

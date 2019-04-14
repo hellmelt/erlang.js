@@ -156,6 +156,13 @@ Decoder.prototype.LIST = function() {
   return term
 }
 
+// NIL is an empty list
+Decoder.prototype.NIL = function() {
+  // Slice of the tag
+  this.bin = this.bin.slice(1)
+  return []
+}
+
 Decoder.prototype.LARGE_TUPLE =
 Decoder.prototype.SMALL_TUPLE = function() {
   var tag = this.bin[0]
